@@ -3,6 +3,7 @@ import {
   Button as ReactAriaButton,
   type ButtonProps as ReactAriaButtonProps,
 } from 'react-aria-components';
+import { css } from 'glamor';
 
 import { AnimatedLoading } from '../../icons/AnimatedLoading';
 import { type CSSProperties, styles, theme } from '../../style';
@@ -146,10 +147,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ..._getActiveStyles(variant, bounce),
     };
 
-    const buttonStyle: ComponentPropsWithoutRef<
-      typeof Button
-    >['style'] = props => ({
-      ...props.defaultStyle,
+    const buttonStyle: ComponentPropsWithoutRef<typeof Button>['style'] = {
       alignItems: 'center',
       justifyContent: 'center',
       flexShrink: 0,
@@ -164,13 +162,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       transition: 'box-shadow .25s',
       WebkitAppRegion: 'no-drag',
       ...styles.smallText,
-      ...(props.isHovered && !isDisabled ? hoveredStyle : {}),
-      ...(props.isPressed && !isDisabled ? pressedStyle : {}),
+      ...(isDisabled ? {} : { ':hover': hoveredStyle }),
+      ...(isDisabled ? {} : { ':focus,:active': pressedStyle }),
       ...(typeof style === 'function' ? style(props) : style),
-    });
+    };
 
     return (
-      <ReactAriaButton ref={ref} style={buttonStyle} {...restProps}>
+      <ReactAriaButton
+        ref={ref}
+        className={String(css(buttonStyle))}
+        {...restProps}
+      >
         {children}
       </ReactAriaButton>
     );
