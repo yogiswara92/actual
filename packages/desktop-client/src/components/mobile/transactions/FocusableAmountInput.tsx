@@ -24,6 +24,10 @@ import { makeAmountFullStyle } from '../../budget/util';
 import { Button } from '../../common/Button2';
 import { Text } from '../../common/Text';
 import { View } from '../../common/View';
+import {
+  AmountKeyboard,
+  type AmountKeyboardRef,
+} from '../../util/AmountKeyboard';
 
 type AmountInputProps = {
   value: number;
@@ -57,6 +61,7 @@ const AmountInput = memo(function AmountInput({
   );
 
   const initialValue = Math.abs(props.value);
+  const keyboardRef = useRef<AmountKeyboardRef | null>(null);
 
   useEffect(() => {
     if (focused) {
@@ -114,6 +119,7 @@ const AmountInput = memo(function AmountInput({
     setEditing(true);
     setText(text);
     props.onChangeValue?.(text);
+    keyboardRef.current?.setInput(text);
   };
 
   const input = (
@@ -121,11 +127,17 @@ const AmountInput = memo(function AmountInput({
       type="text"
       ref={mergedInputRef}
       value={text}
-      inputMode="decimal"
+      inputMode="none"
       autoCapitalize="none"
       onChange={e => onChangeText(e.target.value)}
       onFocus={onFocus}
-      onBlur={onBlur}
+      onBlur={e => {
+        // Do not blur when clicking on the keyboard elements
+        if (keyboardRef.current?.keyboardDOM.contains(e.relatedTarget)) {
+          return;
+        }
+        onBlur(e);
+      }}
       onKeyUp={onKeyUp}
       data-testid="amount-input"
       style={{ flex: 1, textAlign: 'center', position: 'absolute' }}
@@ -155,6 +167,13 @@ const AmountInput = memo(function AmountInput({
       >
         {editing ? text : amountToCurrency(value)}
       </Text>
+      {focused && (
+        <AmountKeyboard
+          keyboardRef={(r: AmountKeyboardRef) => (keyboardRef.current = r)}
+          onChange={onChangeText}
+          onBlur={onBlur}
+        />
+      )}
     </View>
   );
 });
