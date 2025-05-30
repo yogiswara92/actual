@@ -4,14 +4,32 @@
 # docker-start.sh files.
 ###################################################
 
+# services:
+#   actual-development:
+#     build: .
+#     image: actual-development
+#     environment:
+#       - HTTPS
+#     ports:
+#       - '3001:3001'
+#     volumes:
+#       - '.:/app'
+#     restart: 'no'
+
+version: '3.8'
+
 services:
-  actual-development:
-    build: .
-    image: actual-development
-    environment:
-      - HTTPS
+  actual:
+    image: actualbudget/actual-server:latest
+    container_name: actual
     ports:
-      - '3001:3001'
+      - "5006:5006"
     volumes:
-      - '.:/app'
-    restart: 'no'
+      - actual_data:/data
+    environment:
+      - ACTUAL_ENV=production
+      - ACTUAL_UPLOAD_FILE=true
+    restart: unless-stopped
+
+volumes:
+  actual_data:
