@@ -29,6 +29,8 @@ services:
     environment:
       - ACTUAL_ENV=production
       - ACTUAL_UPLOAD_FILE=true
+    labels:
+      - coolify.network.port=5006
     restart: unless-stopped
 
 volumes:
