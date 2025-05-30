@@ -31,14 +31,7 @@ services:
       - ACTUAL_UPLOAD_FILE=true
       - ACTUAL_URL=https://budget.yesvara.com
     labels:
-      - coolify.network.port=5006
-      - traefik.enable=true
-      - traefik.http.routers.actual.rule=Host(`budget.yesvara.com`)
-      - traefik.http.routers.actual.entrypoints=https
-      - traefik.http.routers.actual.tls=true
-      - traefik.http.routers.actual.tls.certresolver=letsencrypt
-      - traefik.http.middlewares.actual-strip.stripprefix.prefixes=/
-      - traefik.http.routers.actual.middlewares=actual-strip
+      - coolify.network.port=5006  # Only this
     restart: unless-stopped
 
 volumes:
