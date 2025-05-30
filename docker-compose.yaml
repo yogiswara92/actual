@@ -29,8 +29,11 @@ services:
     environment:
       - ACTUAL_ENV=production
       - ACTUAL_UPLOAD_FILE=true
+      - ACTUAL_URL=https://budget.yesvara.com
     labels:
       - coolify.network.port=5006
+      - traefik.http.middlewares.strip-prefix.stripprefix.prefixes=/
+      - traefik.http.routers.https-1-qcs84os80cogwwgcwkc0wc8k-actual.middlewares=strip-prefix
     restart: unless-stopped
 
 volumes:
