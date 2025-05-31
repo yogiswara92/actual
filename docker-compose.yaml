@@ -16,61 +16,59 @@
 #       - '.:/app'
 #     restart: 'no'
 
-# version: '3.8'
-
-# services:
-#   actual:
-#     image: actualbudget/actual-server:latest
-#     container_name: actual
-#     ports:
-#       - "5006:5006"
-#     volumes:
-#       - actual_data:/data
-#     environment:
-#       - ACTUAL_ENV=production
-#       - ACTUAL_UPLOAD_FILE=true
-#       - ACTUAL_URL=https://budget.yesvara.com
-#     labels:
-#       - coolify.network.port=5006  # Only this
-#     restart: unless-stopped
-
-# volumes:
-#   actual_data:
-
 version: '3.8'
 
 services:
-  traefik:
-    image: traefik:latest
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - "./traefik.yaml:/etc/traefik/traefik.yaml"
-      - "./traefik/data:/data"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-
-  actual-server:
+  actual:
     image: actualbudget/actual-server:latest
-    restart: unless-stopped
+    container_name: actual
+    ports:
+      - "5006:5006"
+    volumes:
+      - actual_data:/data
     environment:
       - ACTUAL_ENV=production
       - ACTUAL_UPLOAD_FILE=true
       - ACTUAL_URL=https://budget.yesvara.com
-    volumes:
-      - ./actual-data:/data
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.actual-server.rule=Host(`budget.yesvara.com`)"
-      - "traefik.http.routers.actual-server.entrypoints=websecure"
-      - "traefik.http.routers.actual-server.tls=true"
-      - "traefik.http.routers.actual-server.tls.certresolver=letsencrypt"
-      - "traefik.http.services.actual-server.loadbalancer.server.port=5006"
+    restart: unless-stopped
 
-      # Middleware to add headers for SharedArrayBuffer
-      - "traefik.http.middlewares.actual-headers.headers.customresponseheaders.Cross-Origin-Opener-Policy=same-origin"
-      - "traefik.http.middlewares.actual-headers.headers.customresponseheaders.Cross-Origin-Embedder-Policy=require-corp"
+volumes:
+  actual_data:
 
-      # Apply middleware to router
-      - "traefik.http.routers.actual-server.middlewares=actual-headers"
+# version: '3.8'
+
+# services:
+#   traefik:
+#     image: traefik:latest
+#     restart: unless-stopped
+#     ports:
+#       - "80:80"
+#       - "443:443"
+#     volumes:
+#       - "./traefik.yaml:/etc/traefik/traefik.yaml"
+#       - "./traefik/data:/data"
+#       - "/var/run/docker.sock:/var/run/docker.sock"
+
+#   actual-server:
+#     image: actualbudget/actual-server:latest
+#     restart: unless-stopped
+#     environment:
+#       - ACTUAL_ENV=production
+#       - ACTUAL_UPLOAD_FILE=true
+#       - ACTUAL_URL=https://budget.yesvara.com
+#     volumes:
+#       - ./actual-data:/data
+#     labels:
+#       - "traefik.enable=true"
+#       - "traefik.http.routers.actual-server.rule=Host(`budget.yesvara.com`)"
+#       - "traefik.http.routers.actual-server.entrypoints=websecure"
+#       - "traefik.http.routers.actual-server.tls=true"
+#       - "traefik.http.routers.actual-server.tls.certresolver=letsencrypt"
+#       - "traefik.http.services.actual-server.loadbalancer.server.port=5006"
+
+#       # Middleware to add headers for SharedArrayBuffer
+#       - "traefik.http.middlewares.actual-headers.headers.customresponseheaders.Cross-Origin-Opener-Policy=same-origin"
+#       - "traefik.http.middlewares.actual-headers.headers.customresponseheaders.Cross-Origin-Embedder-Policy=require-corp"
+
+#       # Apply middleware to router
+#       - "traefik.http.routers.actual-server.middlewares=actual-headers"
